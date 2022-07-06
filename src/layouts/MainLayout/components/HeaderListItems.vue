@@ -33,5 +33,6 @@ export default defineComponent({
 <style lang="scss">
 nav {
   display: flex;
+  column-gap: 2rem;
 }
 </style>
