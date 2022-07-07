@@ -14,6 +14,6 @@ export default defineComponent({
 .divider {
   width: 100%;
   height: 1px;
-  background-color: #e0e0e0;
+  background-color: $borderPrimary;
 }
 </style>

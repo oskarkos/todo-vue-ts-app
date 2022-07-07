@@ -2,6 +2,17 @@
   <router-view />
 </template>
 
+<script lang="ts">
+import { defineComponent } from "vue";
+
+export default defineComponent({
+  name: "App",
+  setup() {
+    return {};
+  },
+});
+</script>
+
 <style lang="scss">
 @import url("https://fonts.googleapis.com/css2?family=Nunito&display=swap");
 
@@ -10,6 +21,7 @@
 }
 
 body {
+  font-family: Nunito, Helvetica, Arial, sans-serif;
   margin: 0;
 }
 

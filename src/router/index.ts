@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
-import HomeView from "../views/HomeView.vue";
+import HomeView from "../views/Home/HomeView.vue";
 import AboutView from "../views/AboutView.vue";
-import LoginView from "../views/LoginView.vue";
+import LoginView from "../views/Login/LoginView.vue";
 import MainLayout from "../layouts/MainLayout/index.vue";
 import EmptyLayout from "../layouts/EmptyLayout/indexLogin.vue";
 import store from "@/store";

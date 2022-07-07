@@ -1,5 +1,14 @@
 <template>
-  <div @click="clickButton" class="buttonContainer">
+  <div
+    class="buttonContainer"
+    :class="
+      buttonType === 'primary'
+        ? 'buttonContainer__primary'
+        : 'buttonContainer__secondary'
+    "
+    @click="clickButton"
+  >
+    <fa-icon v-if="icon" class="buttonContainer__icon" :icon="icon" />
     <p>{{ buttonText }}</p>
   </div>
 </template>
@@ -14,6 +23,14 @@ export default defineComponent({
     buttonText: {
       type: String,
       default: "Button",
+    },
+    buttonType: {
+      type: String,
+      default: "primary",
+    },
+    icon: {
+      type: String,
+      default: "",
     },
   },
   setup(_, { emit }) {
@@ -34,21 +51,35 @@ export default defineComponent({
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 2px solid white;
   border-radius: 5px;
-  height: 3rem;
-  background-color: white;
+  height: 2.5rem;
   cursor: pointer;
+  &__icon {
+    margin-right: 0.5rem;
+  }
   p {
     font-size: 1rem;
-    letter-spacing: 3px;
     font-weight: bold;
-    color: $green-primary;
   }
-  &:hover {
+
+  &__primary {
+    border: 2px solid $green-primary;
     background-color: $green-primary;
-    border-color: $green-primary;
-    p {
+    color: white;
+    &:hover {
+      background-color: white;
+      border-color: $green-primary;
+      color: $green-primary;
+    }
+  }
+  &__secondary {
+    border: 2px solid white;
+    background-color: white;
+    color: $green-primary;
+
+    &:hover {
+      background-color: $green-primary;
+      border-color: white;
       color: white;
     }
   }

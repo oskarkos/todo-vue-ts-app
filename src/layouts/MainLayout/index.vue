@@ -40,15 +40,20 @@ export default defineComponent({
 
 <style lang="scss">
 .container {
+  width: 100%;
+  height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
+  background-color: $background-primary;
   &__header {
     width: 100%;
+    height: 3rem;
     display: flex;
     align-items: center;
     justify-content: space-evenly;
+    background-color: white;
     box-shadow: 0px 1px 10px 0px rgba(0, 0, 0, 0.15);
     img {
       width: 12rem;

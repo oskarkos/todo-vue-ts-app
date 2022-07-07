@@ -1,15 +1,13 @@
 <template>
-  <div>
-    <nav>
-      <HeaderItem
-        v-for="(item, index) in itemsData"
-        :key="index"
-        :path="item.path"
-        :number="item.number"
-        :title="item.title"
-      />
-    </nav>
-  </div>
+  <nav>
+    <HeaderItem
+      v-for="(item, index) in itemsData"
+      :key="index"
+      :path="item.path"
+      :number="item.number"
+      :title="item.title"
+    />
+  </nav>
 </template>
 
 <script lang="ts">
@@ -33,6 +31,7 @@ export default defineComponent({
 <style lang="scss">
 nav {
   display: flex;
+  height: 100%;
   column-gap: 2rem;
 }
 </style>

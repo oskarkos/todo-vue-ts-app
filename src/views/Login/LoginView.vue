@@ -30,7 +30,11 @@
           </div>
         </div>
         <div class="login__button">
-          <Button @click-button="login" button-text="Login"></Button>
+          <Button
+            button-type="secondary"
+            button-text="Login"
+            @click-button="login"
+          ></Button>
         </div>
         <p class="login__errorMessage" v-if="emptyData">Fields Required</p>
         <p class="login__errorMessage" v-if="incorrectData">
@@ -126,7 +130,8 @@ export default defineComponent({
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      h1 {
+      & h1 {
+        font-size: 2rem;
         color: white;
         letter-spacing: 3px;
       }
@@ -141,10 +146,11 @@ export default defineComponent({
       justify-content: center;
       align-items: center;
       position: relative;
-      img {
+      & img {
         width: 60%;
       }
-      a {
+      & a {
+        height: auto;
         position: absolute;
         outline: none;
         bottom: 1rem;

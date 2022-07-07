@@ -31,6 +31,7 @@ export default defineComponent({
 <style lang="scss">
 a {
   display: flex;
+  height: 100%;
   justify-content: center;
   align-items: center;
   color: $title-secondary;
@@ -41,12 +42,12 @@ a {
   .numberCicle {
     display: flex;
     justify-content: center;
-    align-items: center;
-    width: 1.2rem;
-    height: 1.2rem;
+    width: 1.4rem;
+    height: 1.4rem;
     border: 2px solid $icon-primary;
-    border-radius: 9999%;
-    p {
+    border-radius: 99%;
+    & p {
+      margin: 0;
       color: $icon-primary;
       font-size: smaller;
       font-weight: bold;
