@@ -23,7 +23,7 @@
           <Input
             id="searchedTask"
             icon="magnifying-glass"
-            placeholder="Search Task"
+            placeholder="Search a Task"
             v-model="taskSearched"
           />
         </div>
@@ -37,8 +37,43 @@
       </div>
     </section>
     <Divider />
+    <section class="py-8">
+      <div class="flex flex-col justify-center items-start">
+        <Input
+          id="searchedTag"
+          icon="tags"
+          placeholder="Search a Tag"
+          v-model="tagSearched"
+        >
+          <template #leftSide>
+            <div class="flex gap-2 pr-4">
+              <Tag
+                v-for="(tag, index) in tagsSearched"
+                :key="index"
+                :can-delete="true"
+                :tag-name="tag"
+                @click="deleteSearchedTag(tag)"
+              ></Tag>
+            </div>
+          </template>
+          <template #rightSide>
+            <div class="fles justify-end w-28 absolute right-0">
+              <Button
+                icon="magnifying-glass"
+                button-text="search"
+                @click-button="addSearchTag"
+              ></Button>
+            </div>
+          </template>
+        </Input>
+        <p v-if="tagsSearched.length === 5" class="text-red-500">
+          You can only search maximum 5 tags
+        </p>
+      </div>
+    </section>
+    <Divider />
     <section class="taskContainer">
-      <div v-if="tasks.length > 0" class="taskContainer__tasks">
+      <div v-if="filteredTasks.length > 0" class="taskContainer__tasks">
         <TasksList
           :tasks="filteredTasks"
           @changeTaskState="changeTaskState"
@@ -119,10 +154,12 @@ export default defineComponent({
   components: { Divider, Input, Button, Modal, Tag, TasksList, ProgressBar },
   setup() {
     const taskSearched = ref("");
+    const tagSearched = ref("");
     const showModal = ref(false);
     const tasks = ref([] as ITasks[]);
     const newTask = ref({} as ITasks);
     const tags = ref([] as ITags[]);
+    const tagsSearched = ref([] as string[]);
     const newTag = ref("");
     const isMaxTags = ref(false);
     const isNotCompleted = ref(false);
@@ -136,11 +173,16 @@ export default defineComponent({
       return (completed / total) * 100;
     });
 
-    const filteredTasks = computed(() => {
-      const search = taskSearched.value.toLowerCase();
-      return tasks.value.filter((task) => {
-        return task.description.toLowerCase().includes(search);
-      });
+    const filteredTasks = computed({
+      get: () => {
+        return tasks.value.filter((task) => {
+          const search = taskSearched.value.toLowerCase();
+          return task.description.toLowerCase().includes(search);
+        });
+      },
+      set: (value) => {
+        tasks.value = value;
+      },
     });
 
     onMounted(() => {
@@ -148,6 +190,32 @@ export default defineComponent({
         ? JSON.parse(localStorage.getItem("tasks")!)
         : [];
     });
+
+    const addSearchTag = () => {
+      if (tagsSearched.value.length === 5) return;
+      filteredTasks.value = filteredTasks.value.filter((task) => {
+        return task.tags
+          .map((tag) => tag.name.trim())
+          .includes(tagSearched.value);
+      });
+      tagsSearched.value.push(tagSearched.value);
+      tagSearched.value = "";
+    };
+
+    const deleteSearchedTag = (tag: string) => {
+      tagsSearched.value = tagsSearched.value.filter((tagSearched) => {
+        return tagSearched !== tag;
+      });
+      let completedTask: ITasks[] = JSON.parse(localStorage.getItem("tasks")!);
+      for (let i = 0; i < tagsSearched.value.length; i++) {
+        completedTask = completedTask.filter((task) => {
+          return task.tags
+            .map((tag) => tag.name.trim())
+            .includes(tagsSearched.value[i]);
+        });
+      }
+      filteredTasks.value = completedTask;
+    };
 
     const openModal = () => {
       showModal.value = !showModal.value;
@@ -259,6 +327,10 @@ export default defineComponent({
       editTask,
       deleteTask,
       filteredTasks,
+      addSearchTag,
+      tagSearched,
+      tagsSearched,
+      deleteSearchedTag,
     };
   },
 });

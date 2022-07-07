@@ -14,6 +14,7 @@ import {
   faListCheck,
   faCheck,
   faCircleCheck as faCircleCheckSolid,
+  faTags,
 } from "@fortawesome/free-solid-svg-icons";
 
 import {
@@ -33,7 +34,8 @@ library.add(
   faTrashCan,
   faPenToSquare,
   faPenToSquare,
-  faCircleCheckSolid
+  faCircleCheckSolid,
+  faTags
 );
 
 const app = createApp(App);

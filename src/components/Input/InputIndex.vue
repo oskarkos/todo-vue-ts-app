@@ -1,5 +1,6 @@
 <template>
   <div class="inputContainer">
+    <slot name="leftSide"></slot>
     <fa-icon v-if="icon" class="inputContainer__icon" :icon="icon" />
     <input
       :id="id"
@@ -8,6 +9,7 @@
       :value="modelValue"
       @input="updateInput"
     />
+    <slot name="rightSide"></slot>
   </div>
 </template>
 
@@ -58,6 +60,7 @@ export default defineComponent({
   border-radius: 5px;
   border: 1px solid $borderPrimary;
   padding: 0 1rem;
+  position: relative;
   &__icon {
     margin-right: 1rem;
     color: $green-primary;
