@@ -13,7 +13,7 @@
           <span class="text-sky-600">{{ completedTasks }}</span> /
           {{ totalTasks }} task left
         </p>
-        <ProgressBar :percentage="contentProgress" />
+        <ProgressBar :percentage="contentProgress || 0" />
       </div>
     </header>
     <Divider />
@@ -39,7 +39,12 @@
     <Divider />
     <section class="taskContainer">
       <div v-if="tasks.length > 0" class="taskContainer__tasks">
-        <TasksList :tasks="tasks" />
+        <TasksList
+          :tasks="filteredTasks"
+          @changeTaskState="changeTaskState"
+          @editTask="editTask"
+          @deleteTask="deleteTask"
+        />
       </div>
       <div v-else class="taskContainer__empty">
         <fa-icon class="taskContainer__empty-icon" icon="list-check" />
@@ -131,6 +136,13 @@ export default defineComponent({
       return (completed / total) * 100;
     });
 
+    const filteredTasks = computed(() => {
+      const search = taskSearched.value.toLowerCase();
+      return tasks.value.filter((task) => {
+        return task.description.toLowerCase().includes(search);
+      });
+    });
+
     onMounted(() => {
       tasks.value = localStorage.getItem("tasks")
         ? JSON.parse(localStorage.getItem("tasks")!)
@@ -142,6 +154,7 @@ export default defineComponent({
     };
 
     const closeModal = () => {
+      isNotCompleted.value = false;
       showModal.value = false;
       tags.value = [] as ITags[];
       newTag.value = "";
@@ -169,6 +182,28 @@ export default defineComponent({
       }
     };
 
+    const deleteTask = (taskId: string) => {
+      tasks.value = tasks.value.filter((task) => task.id !== taskId);
+      localStorage.setItem("tasks", JSON.stringify(tasks.value));
+    };
+
+    const editTask = (task: ITasks) => {
+      newTask.value.title = task.title;
+      newTask.value.description = task.description;
+      newTask.value.isCompleted = task.isCompleted;
+      newTask.value.id = task.id;
+      tags.value = task.tags;
+      openModal();
+    };
+
+    const changeTaskState = (taskId: string) => {
+      const task = tasks.value.find((task) => task.id === taskId);
+      if (task) {
+        task.isCompleted = !task.isCompleted;
+        localStorage.setItem("tasks", JSON.stringify(tasks.value));
+      }
+    };
+
     const deleteTag = (tag: string) => {
       isMaxTags.value = false;
       tags.value = tags.value.filter((t) => t.id !== tag);
@@ -180,16 +215,24 @@ export default defineComponent({
         newTask.value.description &&
         tags.value.length > 0
       ) {
-        tasks.value.push({
-          id: uuid.v1(),
-          title: newTask.value.title,
-          description: newTask.value.description,
-          isCompleted: true,
-          tags: tags.value,
-        });
+        if (newTask.value.id) {
+          const task = tasks.value.find((task) => task.id === newTask.value.id);
+          if (task) {
+            task.title = newTask.value.title;
+            task.description = newTask.value.description;
+            task.tags = tags.value;
+          }
+        } else {
+          tasks.value.push({
+            id: uuid.v1(),
+            title: newTask.value.title,
+            description: newTask.value.description,
+            isCompleted: false,
+            tags: tags.value,
+          });
+        }
         localStorage.setItem("tasks", JSON.stringify(tasks.value));
         closeModal();
-        isNotCompleted.value = false;
       } else {
         isNotCompleted.value = true;
       }
@@ -212,6 +255,10 @@ export default defineComponent({
       contentProgress,
       totalTasks,
       completedTasks,
+      changeTaskState,
+      editTask,
+      deleteTask,
+      filteredTasks,
     };
   },
 });

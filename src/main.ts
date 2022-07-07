@@ -13,6 +13,7 @@ import {
   faClose,
   faListCheck,
   faCheck,
+  faCircleCheck as faCircleCheckSolid,
 } from "@fortawesome/free-solid-svg-icons";
 
 import {
@@ -30,7 +31,9 @@ library.add(
   faCheck,
   faCircleCheck,
   faTrashCan,
-  faPenToSquare
+  faPenToSquare,
+  faPenToSquare,
+  faCircleCheckSolid
 );
 
 const app = createApp(App);

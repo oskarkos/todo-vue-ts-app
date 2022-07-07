@@ -1,13 +1,13 @@
 <template>
-  <div class="container">
-    <div class="container__header">
+  <div class="containerApp">
+    <div class="containerApp__header">
       <img
         :src="require('@/assets/logos/LogoEmpresa.png')"
         alt="company_logo"
       />
       <HeaderListItems />
-      <div @click="closeSesion" class="container__header-close">
-        <fa-icon class="container__header-icon" icon="sign-out-alt" />
+      <div @click="closeSesion" class="containerApp__header-close">
+        <fa-icon class="containerApp__header-icon" icon="sign-out-alt" />
         <p>Sing Out</p>
       </div>
     </div>
@@ -39,8 +39,9 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
-.container {
+.containerApp {
   width: 100%;
+  margin: 0;
   height: 100vh;
   display: flex;
   flex-direction: column;

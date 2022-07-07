@@ -3,21 +3,62 @@
     <div class="taskItemContainer">
       <div class="taskItemContainer__leftSide">
         <fa-icon
+          v-if="!isCompleted"
           class="taskItemIcon taskItemIcon__select"
           icon="fa-regular fa-circle-check"
+          @click="changeTaskState"
+        />
+        <fa-icon
+          v-if="isCompleted"
+          class="taskItemIcon taskItemIcon__completed"
+          icon="fa-solid fa-circle-check"
+          @click="changeTaskState"
         />
         <div class="taskItemContainer__leftSide-description">
-          <h4>{{ title }}</h4>
-          <p>{{ description }}</p>
+          <h4
+            class="m-0 text-xl font-semibold"
+            :class="isCompleted ? 'text-gray-200' : 'text-neutral-800'"
+          >
+            {{ title }}
+          </h4>
+          <p
+            class="m-0 text-base"
+            :class="isCompleted ? 'text-gray-200' : 'text-neutral-500'"
+          >
+            {{ description }}
+          </p>
         </div>
       </div>
       <div class="taskItemContainer__rigthSide">
         <div class="taskItemContainer__rigthSide-tags">
-          <Tag v-for="(tag, index) in tags" :key="index" :tag-name="tag.name" />
+          <Tag
+            v-for="(tag, index) in tags"
+            :key="index"
+            :tag-name="tag.name"
+            :disabled="isCompleted"
+          />
         </div>
         <div class="taskItemContainer__rigthSide-actions">
-          <fa-icon class="taskItemIcon" icon="fa-regular fa-pen-to-square" />
-          <fa-icon class="taskItemIcon" icon="fa-regular fa-trash-can" />
+          <fa-icon
+            class="taskItemIcon"
+            :class="
+              isCompleted
+                ? 'taskItemIcon__completed cursor-not-allowed'
+                : undefined
+            "
+            icon="fa-regular fa-pen-to-square"
+            @click="editTask"
+          />
+          <fa-icon
+            class="taskItemIcon"
+            :class="
+              isCompleted
+                ? 'taskItemIcon__completed cursor-not-allowed'
+                : undefined
+            "
+            icon="fa-regular fa-trash-can"
+            @click="deleteTask"
+          />
         </div>
       </div>
     </div>
@@ -56,8 +97,21 @@ export default defineComponent({
       required: true,
     },
   },
-  setup() {
-    return {};
+  setup(props, { emit }) {
+    const changeTaskState = () => {
+      emit("changeTaskState", props.id);
+    };
+
+    const editTask = () => {
+      if (props.isCompleted) return;
+      emit("editTask");
+    };
+
+    const deleteTask = () => {
+      if (props.isCompleted) return;
+      emit("deleteTask");
+    };
+    return { changeTaskState, editTask, deleteTask };
   },
 });
 </script>
@@ -78,17 +132,6 @@ export default defineComponent({
       flex-direction: column;
       align-items: flex-start;
       width: 100%;
-      & p {
-        margin: 0;
-        font-size: 1rem;
-        color: $subtitle-primary;
-      }
-      & h4 {
-        margin: 0;
-        font-size: 1.2rem;
-        font-weight: bold;
-        color: $title-primary;
-      }
     }
   }
   &__rigthSide {
@@ -115,6 +158,9 @@ export default defineComponent({
   color: $green-primary;
   cursor: pointer;
   &__select {
+    color: $text-disabled;
+  }
+  &__completed {
     color: $text-disabled;
   }
 }

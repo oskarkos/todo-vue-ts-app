@@ -1,5 +1,11 @@
 <template>
-  <div class="tag" :class="canDelete ? 'cursorPointer' : undefined">
+  <div
+    class="tag"
+    :class="[
+      canDelete ? 'cursorPointer' : undefined,
+      !disabled ? 'tag__able' : 'tag__disabled',
+    ]"
+  >
     <p>{{ tagName }}</p>
     <fa-icon v-if="canDelete" class="icon" icon="close" />
   </div>
@@ -20,6 +26,10 @@ export default defineComponent({
       type: Boolean,
       default: false,
     },
+    disabled: {
+      type: Boolean,
+      default: false,
+    },
   },
   setup() {
     return {};
@@ -34,11 +44,16 @@ export default defineComponent({
   justify-content: flex-start;
   width: fit-content;
   height: 2rem;
-  background-color: $green-primary;
   color: white;
   font-size: 1rem;
   padding: 0.5rem 1rem;
   border-radius: 1.5rem;
+  &__able {
+    background-color: $green-primary;
+  }
+  &__disabled {
+    background-color: $text-disabled;
+  }
 }
 
 .cursorPointer {
