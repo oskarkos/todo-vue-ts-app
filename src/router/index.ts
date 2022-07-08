@@ -1,6 +1,9 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
 import HomeView from "../views/Home/HomeView.vue";
-import AboutView from "../views/AboutView.vue";
+import DetailsView from "../views/DetailsView.vue";
+import AccountingView from "../views/AccountingView.vue";
+import ClosureView from "../views/ClosureView.vue";
+import DistributonView from "../views/DistributionView.vue";
 import LoginView from "../views/Login/LoginView.vue";
 import MainLayout from "../layouts/MainLayout/index.vue";
 import EmptyLayout from "../layouts/EmptyLayout/indexLogin.vue";
@@ -33,7 +36,52 @@ const routes: Array<RouteRecordRaw> = [
       {
         path: "",
         name: "accouting",
-        component: AboutView,
+        component: AccountingView,
+      },
+    ],
+  },
+  {
+    path: "/distribution",
+    name: "distribution",
+    component: MainLayout,
+    meta: {
+      requiresAuth: true,
+    },
+    children: [
+      {
+        path: "",
+        name: "distribution",
+        component: DistributonView,
+      },
+    ],
+  },
+  {
+    path: "/closure",
+    name: "closure",
+    component: MainLayout,
+    meta: {
+      requiresAuth: true,
+    },
+    children: [
+      {
+        path: "",
+        name: "closure",
+        component: ClosureView,
+      },
+    ],
+  },
+  {
+    path: "/details",
+    name: "datils",
+    component: MainLayout,
+    meta: {
+      requiresAuth: true,
+    },
+    children: [
+      {
+        path: "",
+        name: "details",
+        component: DetailsView,
       },
     ],
   },
@@ -59,7 +107,6 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
   if (to.matched.some((record) => record.meta.requiresAuth)) {
     if (!store.state.loggedIn) {
-      console.log("not logged in");
       next({ name: "login-index" });
     } else {
       next();
