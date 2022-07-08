@@ -7,9 +7,26 @@ import DistributonView from "../views/DistributionView.vue";
 import LoginView from "../views/Login/LoginView.vue";
 import MainLayout from "../layouts/MainLayout/index.vue";
 import EmptyLayout from "../layouts/EmptyLayout/indexLogin.vue";
+import NotFoundView from "../views/NotFoundView.vue";
 import store from "@/store";
 
 const routes: Array<RouteRecordRaw> = [
+  {
+    path: "/login",
+    component: EmptyLayout,
+    children: [
+      {
+        path: "",
+        name: "log-in",
+        component: LoginView,
+      },
+    ],
+  },
+  {
+    path: "/:catchAll(.*)",
+    name: "NotFound",
+    component: NotFoundView,
+  },
   {
     path: "/",
     name: "tasks",
@@ -85,18 +102,6 @@ const routes: Array<RouteRecordRaw> = [
       },
     ],
   },
-  {
-    path: "/login",
-    name: "login",
-    component: EmptyLayout,
-    children: [
-      {
-        path: "",
-        name: "login-index",
-        component: LoginView,
-      },
-    ],
-  },
 ];
 
 const router = createRouter({
@@ -107,7 +112,7 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
   if (to.matched.some((record) => record.meta.requiresAuth)) {
     if (!store.state.loggedIn) {
-      next({ name: "login-index" });
+      next({ name: "log-in" });
     } else {
       next();
     }
