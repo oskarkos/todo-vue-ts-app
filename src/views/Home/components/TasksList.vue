@@ -39,12 +39,10 @@ export default defineComponent({
     };
 
     const editTask = (e: ITasks) => {
-      console.log("editTask");
       emit("editTask", e);
     };
 
     const deleteTask = (e: string) => {
-      console.log("deleteTask");
       emit("deleteTask", e);
     };
 

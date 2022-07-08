@@ -1,21 +1,10 @@
 <template>
   <div class="homeContainer">
-    <header class="headerCotainer">
-      <div class="headerCotainer__leftSide">
-        <div class="headerCotainer__leftSide-number">1</div>
-        <div class="headerCotainer__leftSide-title">
-          <p>Immediate Steps</p>
-          <p>These are your immediate steps to complete</p>
-        </div>
-      </div>
-      <div class="headerCotainer__rightSide">
-        <p class="text-gray-500 mb-2 text-lg font-semibold">
-          <span class="text-sky-600">{{ completedTasks }}</span> /
-          {{ totalTasks }} task left
-        </p>
-        <ProgressBar :percentage="contentProgress || 0" />
-      </div>
-    </header>
+    <HeaderCompVue
+      :completed-tasks="completedTasks"
+      :total-tasks="totalTasks"
+      :content-progress="contentProgress"
+    />
     <Divider />
     <section>
       <div class="newTask">
@@ -138,20 +127,28 @@
 
 <script lang="ts">
 import { defineComponent, onMounted, ref } from "vue";
-import { uuid } from "vue-uuid"; // Import uuid
+import { uuid } from "vue-uuid";
 import Divider from "@/components/Divider/DividerIndex.vue";
 import Input from "@/components/Input/InputIndex.vue";
 import Button from "@/components/Button/ButtonIndex.vue";
 import Modal from "@/components/Modal/ModalIndex.vue";
 import Tag from "@/components/Tag/TagIndex.vue";
 import TasksList from "./components/TasksList.vue";
-import ProgressBar from "@/components/ProgressBar/ProgressBarIndex.vue";
+import HeaderCompVue from "./components/HeaderComp.vue";
 import { ITasks, ITags } from "../Home/types/HomeTypes";
 import { computed } from "@vue/reactivity";
 
 export default defineComponent({
   name: "HomeView",
-  components: { Divider, Input, Button, Modal, Tag, TasksList, ProgressBar },
+  components: {
+    Divider,
+    Input,
+    Button,
+    Modal,
+    Tag,
+    TasksList,
+    HeaderCompVue,
+  },
   setup() {
     const taskSearched = ref("");
     const tagSearched = ref("");
@@ -163,9 +160,10 @@ export default defineComponent({
     const newTag = ref("");
     const isMaxTags = ref(false);
     const isNotCompleted = ref(false);
-    const totalTasks = computed(() => tasks.value.length);
+    const allTasks = ref([] as ITasks[]);
+    const totalTasks = computed(() => allTasks.value.length);
     const completedTasks = computed(
-      () => tasks.value.filter((task) => task.isCompleted).length
+      () => allTasks.value.filter((task) => task.isCompleted).length
     );
     const contentProgress = computed(() => {
       const total = totalTasks.value;
@@ -185,20 +183,34 @@ export default defineComponent({
       },
     });
 
+    const getAllTask = () => {
+      allTasks.value = JSON.parse(
+        localStorage.getItem("tasks") || "[]"
+      ) as ITasks[];
+    };
+
     onMounted(() => {
-      tasks.value = localStorage.getItem("tasks")
-        ? JSON.parse(localStorage.getItem("tasks")!)
-        : [];
+      tasks.value = JSON.parse(
+        localStorage.getItem("tasks") || "[]"
+      ) as ITasks[];
+      getAllTask();
     });
 
     const addSearchTag = () => {
+      if (!tagSearched.value) return;
       if (tagsSearched.value.length === 5) return;
-      filteredTasks.value = filteredTasks.value.filter((task) => {
-        return task.tags
-          .map((tag) => tag.name.trim())
-          .includes(tagSearched.value);
-      });
+      let completedTask: ITasks[] = JSON.parse(
+        localStorage.getItem("tasks") || "[]"
+      ) as ITasks[];
       tagsSearched.value.push(tagSearched.value);
+      for (let i = 0; i < tagsSearched.value.length; i++) {
+        completedTask = completedTask.filter((task) => {
+          return task.tags
+            .map((tag) => tag.name.trim())
+            .includes(tagsSearched.value[i]);
+        });
+      }
+      filteredTasks.value = completedTask;
       tagSearched.value = "";
     };
 
@@ -206,7 +218,9 @@ export default defineComponent({
       tagsSearched.value = tagsSearched.value.filter((tagSearched) => {
         return tagSearched !== tag;
       });
-      let completedTask: ITasks[] = JSON.parse(localStorage.getItem("tasks")!);
+      let completedTask: ITasks[] = JSON.parse(
+        localStorage.getItem("tasks") || "[]"
+      ) as ITasks[];
       for (let i = 0; i < tagsSearched.value.length; i++) {
         completedTask = completedTask.filter((task) => {
           return task.tags
@@ -253,6 +267,7 @@ export default defineComponent({
     const deleteTask = (taskId: string) => {
       tasks.value = tasks.value.filter((task) => task.id !== taskId);
       localStorage.setItem("tasks", JSON.stringify(tasks.value));
+      getAllTask();
     };
 
     const editTask = (task: ITasks) => {
@@ -265,10 +280,13 @@ export default defineComponent({
     };
 
     const changeTaskState = (taskId: string) => {
-      const task = tasks.value.find((task) => task.id === taskId);
-      if (task) {
+      const task = filteredTasks.value.find((task) => task.id === taskId);
+      const taskFullItem = allTasks.value.find((task) => task.id === taskId);
+      if (task && taskFullItem) {
         task.isCompleted = !task.isCompleted;
-        localStorage.setItem("tasks", JSON.stringify(tasks.value));
+        taskFullItem.isCompleted = !taskFullItem.isCompleted;
+        localStorage.setItem("tasks", JSON.stringify(allTasks.value));
+        getAllTask();
       }
     };
 
@@ -300,6 +318,7 @@ export default defineComponent({
           });
         }
         localStorage.setItem("tasks", JSON.stringify(tasks.value));
+        getAllTask();
         closeModal();
       } else {
         isNotCompleted.value = true;
